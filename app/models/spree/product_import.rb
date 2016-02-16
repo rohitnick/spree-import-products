@@ -197,6 +197,16 @@ module Spree
           associate_product_with_taxon(variant.product, field.to_s, options[:with][field.to_sym])
         end
 
+        #Associate our new variant with any stock item
+        source_location = Spree::StockLocation.find_by(default: true)
+        stock_item = variant.stock_items.where(stock_location_id: source_location.id).first
+
+        if options[:with][:on_hand].nil?
+          stock_item.set_count_on_hand(0)
+        else
+          stock_item.set_count_on_hand(options[:with][:on_hand])
+        end
+
         #Finally, attach any images that have been specified
         ProductImport.settings[:image_fields].each do |field|
           find_and_attach_image_to(variant, options[:with][field.to_sym])
@@ -304,7 +314,7 @@ module Spree
         #Stock item
         source_location = Spree::StockLocation.find_by(default: true)
         stock_item = product.stock_items.where(stock_location_id: source_location.id).first
-        
+
         if params_hash[:on_hand].nil?
           stock_item.set_count_on_hand(0)
         else
