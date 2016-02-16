@@ -88,7 +88,7 @@ module Spree
         @skus_of_products_before_import = @products_before_import.map(&:sku)
 
         #rows = CSV.read(self.data_file.path, :encoding => 'windows-1251:utf-8')
-        rows = CSV.read(self.data_file.path)
+        rows = CSV.read(self.data_file.path, "r:ISO-8859-1")
 
         if ProductImport.settings[:first_row_is_headings]
           col = get_column_mappings(rows[0])
@@ -377,7 +377,7 @@ module Spree
       product_image = Spree::Image.new({:attachment => file,
                                 :viewable_id => product_or_variant.id,
                                 :viewable_type => "Spree::Variant",
-                                :position => product_or_variant.images.length
+                                :position => product_or_variant.images.length+1
                                 })
 
       log("#{product_image.viewable_id} : #{product_image.viewable_type} : #{product_image.position}")
