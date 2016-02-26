@@ -442,15 +442,16 @@ module Spree
         taxonomy = Spree::Taxonomy.where("lower(name) = ?", hierarchy.first.downcase).first
         taxonomy = Taxonomy.create(:name => hierarchy.first.capitalize) if taxonomy.nil? && ProductImport.settings[:create_missing_taxonomies]
         last_taxon = taxonomy.root
+        product.taxons << last_taxon unless product.taxons.include?(last_taxon)
 
         hierarchy.shift
         hierarchy.each do |taxon|
+          taxon = taxon.titleize
           #last_taxon = last_taxon.children.find_or_create_by_name_and_taxonomy_id(taxon, taxonomy.id)
           last_taxon = last_taxon.children.find_or_create_by(name: taxon, taxonomy_id: taxonomy.id)
+          product.taxons << last_taxon unless product.taxons.include?(last_taxon)
         end
 
-        #Spree only needs to know the most detailed taxonomy item
-        product.taxons << last_taxon unless product.taxons.include?(last_taxon)
       end
     end
     ### END TAXON HELPERS ###
