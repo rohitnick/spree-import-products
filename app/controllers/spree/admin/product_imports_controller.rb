@@ -13,8 +13,14 @@ module Spree
 
       def create
         @product_import = Spree::ProductImport.create(product_import_params)
-        ImportProductsJob.perform_later(@product_import)
-        flash[:notice] = t('product_import_processing')
+        begin
+          ImportProductsJob.perform_later(@product_import)
+          flash[:notice] = t('product_import_processing')
+        rescue StandardError => e
+          @product_import.error_text=e.message+ ' ' + e.backtrace.inspect
+          @product_import.failure
+          flash[:error] = t('product_import_error')
+        end
         redirect_to admin_product_imports_path
       end
 

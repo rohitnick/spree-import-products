@@ -10,9 +10,8 @@ module Spree
 
   class ProductImport < ActiveRecord::Base
     #attr_accessible :data_file, :data_file_file_name, :data_file_content_type, :data_file_file_size, :data_file_updated_at, :product_ids, :state, :failed_at, :completed_at
-    has_attached_file :data_file, :path => ":rails_root/lib/etc/product_data/data-files/:basename.:extension"
-    validates_attachment_presence :data_file
-    validates_attachment :data_file, :presence => true, content_type: { content_type: ["text/csv", "text/plain", "text/comma-separated-values", "application/octet-stream", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] }
+    has_attached_file :data_file, path: "public/spree/product_imports/data-files/:basename_:timestamp.:extension"
+    validates_attachment :data_file, presence: true, content_type: { content_type: ["text/csv", "text/plain", "text/comma-separated-values", "application/octet-stream", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] }
 
 
     # after_destroy :destroy_products
@@ -41,7 +40,7 @@ module Spree
         transition :to => :completed, :from => :started
       end
       event :failure do
-        transition :to => :failed, :from => :started
+        transition :to => :failed, :from => [:created, :started]
       end
 
       before_transition :to => [:failed] do |import|
@@ -62,7 +61,7 @@ module Spree
       elsif completed?
         completed_at
       else
-        Time.now
+        updated_at
       end
     end
 
@@ -89,7 +88,10 @@ module Spree
         @skus_of_products_before_import = @products_before_import.map(&:sku)
 
         #rows = CSV.read(self.data_file.path, :encoding => 'windows-1251:utf-8')
-        rows = CSV.read(self.data_file.path, "r:ISO-8859-1")
+        # rows = CSV.read(self.data_file.path, "r:ISO-8859-1")
+        file_url = File.file?(self.data_file.path) ? self.data_file.path : self.data_file.url
+        csv_string=open(file_url,"r:ISO-8859-1").read.encode('utf-8')
+        rows = CSV.parse(csv_string, :col_sep => ',')
 
         if ProductImport.settings[:first_row_is_headings]
           col = get_column_mappings(rows[0])

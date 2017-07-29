@@ -3,29 +3,33 @@
 <% end %>
 
 <div class="row">
-<div class="col-sm-6">
-<%= form_for([:admin, @product_import], :method => :post, :html => { :multipart => true }) do |f| %>
-  <fieldset class="no-border-top">
-  <%= f.field_container :data_file, class: ['form-group'] do  %>
-    <%= f.label :data_file, t('form.product_import.new.data_file') %>
-    <%= f.file_field :data_file %>
-    <%= f.error_message_on :data_file %>
+  <div class="col-sm-6">
+  <%= form_for([:admin, @product_import], :method => :post, :html => { :multipart => true }) do |f| %>
+    <fieldset class="no-border-top">
+      <%= f.field_container :data_file, class: ['form-group'] do  %>
+        <%= f.label :data_file, t('form.product_import.new.data_file') %>
+        <%= f.file_field :data_file %>
+        <%= f.error_message_on :data_file %>
+      <% end %>
+    <div data-hook="buttons" class="form-actions">
+      <%= button Spree.t('actions.create'), 'ok', 'submit', {class: 'btn-success btn-sm'} %>
+    </div>
+    </fieldset>
   <% end %>
-  <div data-hook="buttons" class="form-actions">
-    <%= button Spree.t('actions.create'), 'ok', 'submit', {class: 'btn-success'} %>
   </div>
-  </fieldset>
-<% end %>
-</div>
+  <div class="col-sm-6">
+    <%= button_link_to t(:download_sample_format), "https://github.com/rohitnick/spree-import-products/product_data_format.csv", class: "btn-primary btn-sm pull-right", icon: 'file', target: '_blank', download: "product_import_format" %>
+  </div>
 </div>
 
 <table class="table">
   <colgroup>
     <col style="width: 15%">
-    <col style="width: 40%">
+    <col style="width: 20%">
     <col style="width: 10%">
     <col style="width: 15%">
     <col style="width: 10%">
+    <col style="width: 20%">
     <col style="width: 5%">
   </colgroup>
   <thead>
@@ -35,6 +39,7 @@
     <th>Status</th>
     <th>Date Status</th>
     <th>Imported</th>
+    <th><%= t('table.error_text') %></th>
     <th class="actions">Actions</th>
   </tr>
   </thead>
@@ -46,6 +51,7 @@
       <td><span class="label label-<%= import.state.downcase %>"><%= t(import.state, :scope => "product_import.state") -%></span></td>
       <td><%= time_ago_in_words import.state_datetime -%> ago</td>
       <td><%= import.product_ids.size -%></td>
+      <td><%= truncate(import.error_text, length: 100)%></td>
       <td class="actions text-center">
         <%= link_to_delete import, :url => admin_product_import_path(import), :no_text => true -%>
       </td>
