@@ -5,7 +5,7 @@ module ImportProducts
         def product_import_results(user, error_message = nil)
           @user = user
           @error_message = error_message
-          attachments["import_products.log"] = File.read(Spree::ProductImport.settings[:log_to]) if @error_message.nil?
+          # attachments["import_products.log"] = File.read(Spree::ProductImport.settings[:log_to]) if @error_message.nil?
           mail(:to => @user.email, :from => 'fonemstr@gmail.com', :subject => "Spree: Import Products #{error_message.nil? ? "Success" : "Failure"}")
         end
       end
