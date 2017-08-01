@@ -1,4 +1,4 @@
-class AddStateFailedAtAndCompletedAtToProductImports < ActiveRecord::Migration
+class AddStateFailedAtAndCompletedAtToProductImports < ActiveRecord::Migration[4.2]
   def change
     add_column :spree_product_imports, :state, :string
     add_column :spree_product_imports, :failed_at, :datetime

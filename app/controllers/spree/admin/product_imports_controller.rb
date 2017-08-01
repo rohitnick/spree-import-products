@@ -14,7 +14,7 @@ module Spree
       def create
         @product_import = Spree::ProductImport.create(product_import_params)
         begin
-          ImportProductsJob.perform_later(@product_import)
+          ImportProductsJob.perform_later(@product_import, current_store, spree_current_user)
           flash[:notice] = t('product_import_processing')
         rescue StandardError => e
           @product_import.error_text=e.message+ ' ' + e.backtrace.inspect

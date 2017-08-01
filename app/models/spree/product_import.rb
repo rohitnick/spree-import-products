@@ -14,7 +14,7 @@ module Spree
     validates_attachment :data_file, presence: true, content_type: { content_type: ["text/csv", "text/plain", "text/comma-separated-values", "application/octet-stream", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] }
 
 
-    # after_destroy :destroy_products
+    after_destroy :destroy_products
 
     serialize :product_ids, Array
     cattr_accessor :settings
@@ -27,9 +27,9 @@ module Spree
     require 'pp'
     require 'open-uri'
 
-    # def destroy_products
-    #   products.destroy_all
-    # end
+    def destroy_products
+      products.destroy_all
+    end
 
     state_machine :initial => :created do
 
