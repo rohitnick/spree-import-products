@@ -4,6 +4,7 @@ module Spree
 
       def index
         @product_import = Spree::ProductImport.new
+        @product_imports = Spree::ProductImport.order("created_at DESC").limit(Spree::Config[:admin_products_per_page] || 10)
       end
 
       def show
