@@ -44,7 +44,7 @@
   </tr>
   </thead>
   <tbody>
-  <% Spree::ProductImport.order("created_at DESC").all.each do |import| %>
+  <% @product_imports.each do |import| %>
     <tr class="<%= cycle('odd', 'even') %>" id="<%= dom_id import %>">
       <td><%= import.created_at -%></td>
       <td><%= link_to import.data_file_file_name, import.data_file.url, target: '_blank', icon: 'file', download: import.data_file_file_name -%></td>
